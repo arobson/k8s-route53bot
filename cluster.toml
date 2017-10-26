@@ -1,0 +1,5 @@
+[<%=namespace%>.route53bot]
+  order = 1
+
+  [<%=namespace%>.route53bot-cron]
+  order = 1

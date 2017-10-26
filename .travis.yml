@@ -1,0 +1,19 @@
+sudo: required
+
+services:
+  - docker
+
+language: node_js
+
+os:
+  - linux
+
+before_script:
+  - npm i dockyard@latest -g
+
+script:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - dockyard build image --repo=arobson --name=k8s-route53bot
+
+node_js:
+  - "8"

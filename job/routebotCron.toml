@@ -1,0 +1,19 @@
+name = "route53bot-cron.<%=namespace%>"
+job = true
+image = "arobson/k8s-route53bot:latest"
+
+[env]
+  K8S_URL = "https://kubernetes.default"
+  K8S_CA = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+  K8S_TOKEN = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+  AWS_ZONE_NAME = "<%=zone%>"
+  AWS_DOMAIN_NAME = "<%=domain%>"
+  AWS_ACCESS_KEY = "<%=awsAccount%>"
+  AWS_SECRET_KEY = "<%=awsSecret%>"
+
+[scale]
+  containers = 1
+
+[deployment]
+  schedule = "6 * * * *"
+  timeLimit = 15

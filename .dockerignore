@@ -1,0 +1,10 @@
+coverage/
+node_modules/
+.nyc_output/
+package-lock.json
+bin
+job
+src
+travis.yml
+cluster.toml
+README.md
