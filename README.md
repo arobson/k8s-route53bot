@@ -1,10 +1,10 @@
 # k8s-route53bot
 
-Create a DNS record in an AWS Route53 zone for every loadBalancer service found in a kubernetes cluster.
+Creates DNS records in an AWS Route53 zone for every loadBalancer service found in a kubernetes cluster.
 
 ## Purpose
 
-This exists to dynamically create a record under an AWS Route 53 Zone for all loadbalancer service IPs in a Kubernetes cluster pointed to a subdomain.
+This exists to dynamically create records under an AWS Route 53 Zone for all loadbalancer service IPs in a Kubernetes cluster pointed to a subdomain.
 
 The repository contains both a 1 time job and a cron job so that after the initial creation, it will check, add/update the record as needed every 6 minutes (the length of the default record TTL).
 
@@ -28,7 +28,7 @@ hikaru deploy git://github.com/arobson/k8s-route53bot \
 You will be prompted for the following set of information:
  * `namespace` - the kubernetes namespace to install the jobs in
  * `zone` - the name of the parent zone (ex: `test.io`)
- * `domain` - the subdomain to create the record for (ex: `me.test.io`)
+ * `domains` - the comma delimited domains to create the record for (ex: `me.test.io,test.io`)
  * `aws-account` - the account id for the IAM account
  * `aws-secret` - the account secret key for the IAM account
 

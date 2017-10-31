@@ -8,7 +8,7 @@ const router = new Route53({
   secretAccessKey: process.env.AWS_SECRET_KEY
 })
 const ZONE_NAME = process.env.AWS_ZONE_NAME
-const DOMAIN_NAME = process.env.AWS_DOMAIN_NAME
+const DOMAIN_NAMES = process.env.AWS_DOMAIN_NAMES
 
 function createRecord () {
   console.log(`connecting to kubernetes at ${process.env.K8S_URL}`)
@@ -38,7 +38,7 @@ function findZone () {
   })
 }
 
-function findRecord (zoneId) {
+function findRecord (zoneId, domain) {
   return new Promise((resolve, reject) => {
     console.log(`looking up records in zone '${zoneId}'`)
     router.records(zoneId, (err, records) => {
@@ -46,8 +46,8 @@ function findRecord (zoneId) {
         console.log('an error occurred looking up records in the zone', err)
         reject(err)
       } else {
-        console.log(`  checking ${records.length} records for '${DOMAIN_NAME}'`)
-        const pattern = DOMAIN_NAME.replace('*', '\\052')
+        console.log(`  checking ${records.length} records for '${domain}'`)
+        const pattern = domain.replace('*', '\\052')
         const record = _.find(records, {name: pattern})
         if (record) {
           console.log('  matching record found')
@@ -71,7 +71,7 @@ function onFailed (err) {
   throw err
 }
 
-function onRecord (zoneId, record) {
+function onRecord (zoneId, domain, record) {
   console.log(`looking up LoadBalacners in kubernetes`)
   return hikaru.k8s.getLoadBalancers()
     .then(
@@ -87,31 +87,35 @@ function onRecord (zoneId, record) {
           return acc
         }, {ips: []})
         console.log(`    with ${set.ips.length} IPs`)
-        return setupRoute(zoneId, record, set)
+        return setupRoute(zoneId, domain, record, set)
       }
     )
 }
 
 function onZoneId (zoneId) {
-  return findRecord(zoneId)
-    .then(
-      record => {
-        return onRecord(zoneId, record)
-      }
-    )
+  const domains = DOMAIN_NAMES.split(',').map(x => x.trim())
+  const changes = domains.map(domain => {
+    return findRecord(zoneId, domain)
+      .then(
+        record => {
+          return onRecord(zoneId, domain, record)
+        }
+      )
+  })
+  return Promise.all(changes)
 }
 
-function setupRoute (zoneId, record, set) {
+function setupRoute (zoneId, domain, record, set) {
   const newRecord = {
     zoneId: zoneId,
-    name: DOMAIN_NAME,
+    name: domain,
     type: 'A',
     ttl: 300,
     values: set.ips
   }
   console.log(`loadbalancer ips:\n${JSON.stringify(set, null, 2)}`)
   if (record) {
-    console.log(`checking zone record for'${DOMAIN_NAME}' for ${set.ips.length > 1 ? 'IPs' : 'IP'} ${set.ips.join(', ')}`)
+    console.log(`checking zone record for'${domain}' for ${set.ips.length > 1 ? 'IPs' : 'IP'} ${set.ips.join(', ')}`)
     if (_.every(set.ips.map(ip => record.values.includes(ip)))) {
       console.log(`  zone record is correct`)
       return Promise.resolve(newRecord)
@@ -120,7 +124,7 @@ function setupRoute (zoneId, record, set) {
       return upsertRecord(newRecord)
     }
   } else {
-    console.log(`creating zone record for '${DOMAIN_NAME}' to ${set.ips.length > 1 ? 'IPs' : 'IP'} ${set.ips.join(', ')}`)
+    console.log(`creating zone record for '${domain}' to ${set.ips.length > 1 ? 'IPs' : 'IP'} ${set.ips.join(', ')}`)
     return upsertRecord(newRecord)
   }
 }
