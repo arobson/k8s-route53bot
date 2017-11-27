@@ -9,11 +9,11 @@ os:
   - linux
 
 before_script:
-  - npm i dockyard@latest -g
+  - npm i @npm-wharf/shipwright@latest -g
 
 script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - dockyard build image --repo=arobson --name=k8s-route53bot
+  - shipwright build image --repo=npmwharf --name=k8s-route53bot --cache-from-latest --tags=lm,v,miv
 
 node_js:
   - "8"

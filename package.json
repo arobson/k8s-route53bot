@@ -1,5 +1,5 @@
 {
-  "name": "k8s-route53bot",
+  "name": "@npm-wharf/k8s-route53bot",
   "version": "1.1.1",
   "description": "a script to create DNS records in an AWS Route53 zone for every loadBalancer service",
   "main": "./src/index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "github.com/arobson/k8s-route53bot"
+    "url": "github.com/npm-wharf/k8s-route53bot"
   },
   "keywords": [
     "kubernetes",
@@ -20,7 +20,7 @@
   "author": "Alex Robson",
   "license": "ISC",
   "dependencies": {
-    "@arobson/hikaru": "1.3.x",
+    "@npm-wharf/hikaru": "1.5.x",
     "bluebird": "^3.5.1",
     "lodash": "^4.17.4",
     "nice-route53": "^1.0.4"

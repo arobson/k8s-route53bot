@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const hikaru = require('@arobson/hikaru')
+const hikaru = require('@npm-wharf/hikaru')
 const Route53 = require('nice-route53')
 const Promise = require('bluebird')
 
