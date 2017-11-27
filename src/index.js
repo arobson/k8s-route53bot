@@ -76,18 +76,28 @@ function onRecord (zoneId, domain, record) {
   return hikaru.k8s.getLoadBalancers()
     .then(
       lbs => {
-        console.log(`    found ${lbs.length} services marked as loadbalancers`)
-        const set = lbs.reduce((acc, lb) => {
-          const ips = lb.status.loadBalancer.ingress.map(i => i.ip)
-          const id = [lb.metadata.name, lb.metadata.namespace].join('.')
-          if (ips.length) {
-            acc[id] = ips
-            acc.ips = acc.ips.concat(ips)
-          }
-          return acc
-        }, {ips: []})
-        console.log(`    with ${set.ips.length} IPs`)
-        return setupRoute(zoneId, domain, record, set)
+        if (lbs.length > 0) {
+          console.log(`    found ${lbs.length} services marked as loadbalancers`)
+          const set = lbs.reduce((acc, lb) => {
+            const ips = lb.status.loadBalancer.ingress.map(i => i.ip)
+            const id = [lb.metadata.name, lb.metadata.namespace].join('.')
+            if (ips.length) {
+              acc[id] = ips
+              acc.ips = acc.ips.concat(ips)
+            }
+            return acc
+          }, {ips: []})
+          console.log(`    with ${set.ips.length} IPs`)
+          return setupRoute(zoneId, domain, record, set)
+        } else {
+          console.log(`    no services marked as loadbalancers were found, checking again in 5 seconds`)
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              return onRecord(zoneId, domain, record)
+                .then(resolve, reject)
+            }, 5000)
+          })
+        }
       }
     )
 }
