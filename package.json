@@ -1,6 +1,6 @@
 {
   "name": "@npm-wharf/k8s-route53bot",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "a script to create DNS records in an AWS Route53 zone for every loadBalancer service",
   "main": "./src/index.js",
   "bin": {

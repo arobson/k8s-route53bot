@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.2"></a>
+## [1.1.2](http://github.com/npm-wharf/k8s-route53bot/compare/v1.1.1...v1.1.2) (2017-11-27)
+
+
+### Bug Fixes
+
+* add retry after timeout when no loadbalancers are found to prevent failure or removing existing records due to loadbalancers taking longer than expected ([fcde796](http://github.com/npm-wharf/k8s-route53bot/commits/fcde796))
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](http://github.com/arobson/k8s-route53bot/compare/v1.1.0...v1.1.1) (2017-11-01)
 
